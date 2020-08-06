@@ -9,6 +9,6 @@ const GridCell = ({cell, id, onClick}) => {
         if (blue) return useColor("blue")
 
     }, [red, green, blue])
-    return <a className={`grid-element ${color}`} onClick={() => onClick(cell)}/>
+    return <a className={`grid-element ${color}`} onClick={() => blue ? onClick(cell) : null}/>
 }
 export default GridCell;

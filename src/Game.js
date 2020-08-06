@@ -1,7 +1,7 @@
 import React, {useEffect, useState} from "react";
 
-import Grid from "../components/Grid";
 import Options from "../components/Options";
+import GridCell from "../components/GridCell";
 
 const Game = () => {
     const [cells, useCells] = useState(null);
@@ -55,7 +55,7 @@ const Game = () => {
     const onCellChange = cellArg => {
 
         const updatedCells = cells.map(cell => (cell.id === cellArg.id ? {...cell, blue: true} : cell));
-        useCells(cells=>{
+        useCells(cells => {
 
             return updatedCells
         })
@@ -71,7 +71,10 @@ const Game = () => {
     }
     return <div className="game">
         <Options startGame={togglePlay}/>
-        <Grid gridCells={cells} gameOn={true} onCellClick={onCellClick} gameOn={gameOn}/>
+        <div className="game-grid">
+            {cells && cells.map(cell => (<GridCell key={cell.id} cell={cell} onClick={onCellClick}/>)) }
+        </div>
+
     </div>
 }
 export default Game;
