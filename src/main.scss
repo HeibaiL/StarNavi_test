@@ -1,0 +1,64 @@
+* {
+  margin: 0;
+  padding: 0;
+}
+$border: 3px solid #f2eef3;
+
+@mixin flex-centering{
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+}
+
+#root {
+  height: 100vh;
+  width: 100vw;
+
+}
+
+.app {
+  @include flex-centering;
+  height: 100%;
+  border: $border;
+  box-sizing: border-box;
+  border: $border;
+ }
+
+.game {
+  flex: 1;
+  height:100%;
+  border: $border;
+  @include flex-centering;
+  flex-direction: column;
+}
+.board{
+  flex:1;
+  height:100%;
+  @include flex-centering;
+
+}
+.game-grid{
+  display: grid;
+  grid-template-columns: repeat(5, 1fr);
+  .green{
+    background-color: chartreuse;
+  }
+  .red{
+    background-color: crimson;
+  }
+  .blue{
+    background-color: aqua;
+  }
+
+}
+.grid-element{
+  width:40px;
+  height: 40px;
+  border: 2px solid #bbb8bc;
+  border-right: 0;
+}
+
+.grid-element:nth-child(5n){
+  border-right: 2px solid #bbb8bc
+}
