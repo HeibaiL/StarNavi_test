@@ -1,14 +1,14 @@
 import React, {useState, useEffect} from "react";
 
-const GridCell = ({red, green, blue, id, onClick}) => {
+const GridCell = ({cell, id, onClick}) => {
     const [color, useColor] = useState('');
-
+    const {red, green, blue} = cell;
     useEffect(() => {
         if (red) return useColor("red");
         if (green) return useColor("green")
         if (blue) return useColor("blue")
 
-    }, [red, green,blue])
-    return <a className={`grid-element ${color}`} id={id} onClick={() => onClick(id)}/>
+    }, [red, green, blue])
+    return <a className={`grid-element ${color}`} onClick={() => onClick(cell)}/>
 }
 export default GridCell;
