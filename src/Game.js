@@ -20,7 +20,7 @@ const Game = () => {
     useEffect(() => {
         const cellsArr = [];
         const availableArr = [];
-        for (let i = 1; i <= gridsNum; i++) {                               //this way is much better to not get confused when working with cells indexes
+        for (let i = 0; i < gridsNum; i++) {
             cellsArr.push({id: i, red: false, green: false, blue: false});
             availableArr.push(i)
         }
@@ -36,12 +36,11 @@ const Game = () => {
     const startGame = () => {
         return setInterval(() => {
             const randomIndex = Math.floor(Math.random() * availableCells.length);
-            const randomNumber = randomIndex === 0 ? 0 : availableCells[randomIndex - 1];
-            const randomCell = cells[randomNumber];
+            const randomCell = cells[randomIndex];
+            console.log(randomCell)
             onCellChange(randomCell)
         }, 1000)
-    };
-
+    }
 
     useEffect(() => {
         if (gameOn) {
