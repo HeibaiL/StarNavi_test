@@ -27,13 +27,11 @@ $font: "Helvetica";
 }
 
 .container {
-  @include flex-centering;
-  flex-direction: column;
   position: relative;
-  top: 30%;
+  top: 20%;
   min-width: 600px;
   margin: auto;
-  justify-content: space-around;
+  width: 70%;
 }
 
 .game {
@@ -47,7 +45,6 @@ $font: "Helvetica";
     justify-content: space-around;
     margin-bottom: 4vh;
 
-
     .play-button {
       padding: 5px 50px;
       font-size: 18px;
@@ -56,8 +53,7 @@ $font: "Helvetica";
       border: 0;
       border-radius: 5px;
       outline: none;
-      cursor:pointer;
-
+      cursor: pointer;
     }
 
     .game-modes {
@@ -71,7 +67,7 @@ $font: "Helvetica";
       border-right: 10px solid #CFD8DC; //to move default select arrow and not create custom one
       font-weight: 500;
       outline: none;
-      cursor:pointer;
+      cursor: pointer;
 
     }
 
@@ -92,12 +88,14 @@ $font: "Helvetica";
     font-weight: bold;
     font-size: 20px;
     margin-bottom: 4vh;
+    text-align: center;
   }
 
   .game-grid {
     display: grid;
     grid-template-columns: repeat(5, 1fr);
     max-width: 250px;
+    margin: auto;
 
     .green {
       background-color: #00E871;
@@ -125,19 +123,15 @@ $font: "Helvetica";
 
 }
 
-
 .board {
   flex: 1;
   height: 100%;
+  overflow-y: auto;
 
-  h1{
+  h1 {
     color: #8B8B8B;
-    font-size:30px;
-    margin-bottom:2vh;
-  }
-
-  .container {
-    height: auto;
+    font-size: 30px;
+    margin-bottom: 4vh;
   }
 
   .leaders-list {
@@ -155,6 +149,5 @@ $font: "Helvetica";
       margin-bottom: 5px;
     }
   }
-
 }
 

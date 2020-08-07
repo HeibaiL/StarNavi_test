@@ -6,12 +6,14 @@ import GridCell from "../components/GridCell";
 const Game = () => {
     const [cells, useCells] = useState([]);
     const [gameSettings, useGameSettings] = useState({allSettings: null, chosenSettings: {}});
+    const [name, setName] = useState("");
     const [gameOn, useGameOn] = useState(false);
     const [intervalId, setIntervalId] = useState(null);
     const [activeCell, setActiveCell] = useState(null);
     const [prevCell, setPrevCell] = useState(null);
     const [successArr, setSuccessArr] = useState([]);
     const [failArr, setFailArr] = useState([]);
+    const [showResults, setResults] = useState(false)
 
 
     useEffect(() => {
@@ -79,9 +81,19 @@ const Game = () => {
         return useGameOn(!gameOn);
     }
 
+    const onInputChange = e => {
+        const {value} = e.target;
+        setName(value)
+    }
+
     return <div className="game">
         <div className="container">
-            <Options startGame={togglePlay} onSelectChange={onSelectChange} options={gameSettings.allSettings}/>
+            <Options startGame={togglePlay}
+                     onSelectChange={onSelectChange}
+                     options={gameSettings.allSettings}
+                     onInputChange={onInputChange}
+                     name={name}
+            />
             <div className="message">Message here</div>
             <div className="game-grid">
                 {cells && cells.map(cell => (<GridCell key={cell.id} cell={cell} onClick={onCellClick}/>))}
