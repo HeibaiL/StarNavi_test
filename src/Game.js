@@ -1,78 +1,93 @@
-import React, {useEffect, useState} from "react";
+import React, {useEffect, useState, useCallback} from "react";
 
 import Options from "../components/Options";
 import GridCell from "../components/GridCell";
 
 const Game = () => {
-    const [cells, useCells] = useState(null);
-    const [gameSettings, useGameSettings] = useState({"field": 10, "delay": 1000});
+    const [cells, useCells] = useState([]);
+    const [gameSettings, useGameSettings] = useState({allSettings: null, chosenSettings: {}});
     const [gameOn, useGameOn] = useState(false);
-    const [availableCells, changeAvailableCells] = useState([]);
-    const [intervalId, setIntervalId] = useState();
+    const [intervalId, setIntervalId] = useState(null);
+    const [activeCell, setActiveCell] = useState(null);
+    const [prevCell, setPrevCell] = useState(null);
+    const [successArr, setSuccessArr] = useState([]);
+    const [failArr, setFailArr] = useState([]);
 
-    const gridsNum = gameSettings && gameSettings.field;
-
-    const updateAvailableCells = num => {
-        const updatedArr = availableCells.filter(cellNum => cellNum !== num);
-        return changeAvailableCells(updatedArr)
-    }
 
     useEffect(() => {
-        const cellsArr = [];
-        const availableArr = [];
-        for (let i = 0; i < gridsNum; i++) {
-            cellsArr.push({id: i, red: false, green: false, blue: false});
-            availableArr.push(i)
-        }
-        useCells(cellsArr)
-        changeAvailableCells(availableArr);
+        fetch("https://starnavi-frontend-test-task.herokuapp.com/game-settings")
+            .then(res => res.json())
+            .then(res => useGameSettings({...gameSettings, allSettings: res}));
 
     }, []);
+    useEffect(() => {
+        const cellsNum = gameSettings.chosenSettings.field || 5;
+        const cellsArr = [];
+        for (let i = 0; i < cellsNum; i++) {
+            cellsArr.push({id: i, pending: false, success: false, fail: false});
+        }
+        useCells(cellsArr)
+    }, [gameSettings])
 
-    const findChosenCell = cell => {
-        if (cell.blue || cell.green || cell.red) return cell;
-    };
-
-    const startGame = () => {
-        return setInterval(() => {
-            const randomIndex = Math.floor(Math.random() * availableCells.length);
-            const randomCell = cells[randomIndex];
-            console.log(randomCell)
-            onCellChange(randomCell)
-        }, 1000)
+    const onSelectChange = e => {
+        const {value} = e.target;
+        const chosenSettings = gameSettings.allSettings[value];
+        useGameSettings({...gameSettings, chosenSettings})
     }
-
     useEffect(() => {
         if (gameOn) {
-            let game = startGame()
-            setIntervalId(game)
+            const activeInterval = setInterval(() => {
+                const randomIndex = Math.floor(Math.random() * gridsNum);
+                const randomCell = cells[randomIndex];
+                setActiveCell(randomCell)
+            }, 1000)
+
+            setIntervalId(activeInterval)
         } else {
             clearInterval(intervalId)
         }
+        return () => clearInterval(intervalId);
     }, [gameOn]);
 
-    const onCellChange = cellArg => {
 
-        const updatedCells = cells.map(cell => (cell.id === cellArg.id ? {...cell, blue: true} : cell));
-        useCells(cells => {
+    useEffect(() => {
+        if (activeCell) {
+            const success = successArr.some(el => el.id === activeCell.id);
+            onCellChange(activeCell, "blue")
+            setTimeout(() => {
+                onCellChange(activeCell, "red")
+            }, 1000)
 
-            return updatedCells
-        })
-    }
+        }
+    }, [activeCell, successArr]);
+
+
+    const onCellChange = (cellArg, color) => {
+        const updatedCells = cells && cells.map(cell => (cell.id === cellArg.id ? {...cell, [color]: true} : cell));
+        useCells(updatedCells)
+
+    };
+
     const onCellClick = cellArg => {
         const {id} = cellArg;
         const updatedCells = cells.map(cell => (cell.id === id ? {...cell, green: true} : cell));
+        setSuccessArr(successArr.concat(cellArg))
         useCells(updatedCells)
     };
 
     const togglePlay = () => {
         return useGameOn(!gameOn);
     }
+
     return <div className="game">
-        <Options startGame={togglePlay}/>
-        <div className="game-grid">
-            {cells && cells.map(cell => (<GridCell key={cell.id} cell={cell} onClick={onCellClick}/>)) }
+        <div className="container">
+            <Options startGame={togglePlay} onSelectChange={onSelectChange} options={gameSettings.allSettings}/>
+            <div className="message">Message here</div>
+            <div className="game-grid">
+                {cells && cells.map(cell => (<GridCell key={cell.id} cell={cell} onClick={onCellClick}/>))}
+            </div>
         </div>
+
 
     </div>
 }
