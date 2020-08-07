@@ -2,12 +2,12 @@ import React, {useState, useEffect} from "react";
 
 const GridCell = ({cell, onClick}) => {
     const [color, useColor] = useState('');
-    const {red, green, blue} = cell;
+    const {success, pending, fail} = cell;
 
     useEffect(() => {
-        if (red) return useColor("red");
-        if (green) return useColor("green")
-        if (blue) return useColor("blue")
+        if (success) return useColor("red");
+        if (pending) return useColor("green")
+        if (fail) return useColor("blue")
 
     }, [cell]);
     return <a className={`grid-element ${color}`} onClick={() => blue ? onClick(cell) : null}/>

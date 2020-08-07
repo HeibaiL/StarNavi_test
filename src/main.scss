@@ -2,19 +2,19 @@
   margin: 0;
   padding: 0;
 }
-$border: 3px solid #f2eef3;
 
-@mixin flex-centering{
+$border: 3px solid #f2eef3;
+$font: "Helvetica";
+
+@mixin flex-centering {
   display: flex;
   justify-content: center;
   align-items: center;
-
 }
 
 #root {
   height: 100vh;
   width: 100vw;
-
 }
 
 .app {
@@ -23,42 +23,138 @@ $border: 3px solid #f2eef3;
   border: $border;
   box-sizing: border-box;
   border: $border;
- }
+  font-family: $font;
+}
+
+.container {
+  @include flex-centering;
+  flex-direction: column;
+  position: relative;
+  top: 30%;
+  min-width: 600px;
+  margin: auto;
+  justify-content: space-around;
+}
 
 .game {
   flex: 1;
-  height:100%;
+  height: 100%;
   border: $border;
-  @include flex-centering;
-  flex-direction: column;
-}
-.board{
-  flex:1;
-  height:100%;
-  @include flex-centering;
+
+  .options {
+    display: flex;
+    width: 100%;
+    justify-content: space-around;
+    margin-bottom: 4vh;
+
+
+    .play-button {
+      padding: 5px 50px;
+      font-size: 18px;
+      background: #7B8D93;
+      color: #FFFFFF;
+      border: 0;
+      border-radius: 5px;
+      outline: none;
+      cursor:pointer;
+
+    }
+
+    .game-modes {
+      font-family: $font;
+      padding: 12px;
+      font-size: 18px;
+      color: #92A1A6;
+      background: #CFD8DC;
+      border-radius: 5px;
+      border: 0;
+      border-right: 10px solid #CFD8DC; //to move default select arrow and not create custom one
+      font-weight: 500;
+      outline: none;
+      cursor:pointer;
+
+    }
+
+    .userName {
+      padding: 12px;
+      font-size: 18px;
+      color: #8E9DA2;
+      background: #F3F3F3;
+      border: 0;
+      outline: none;
+      width: 30%;
+      font-family: $font;
+    }
+  }
+
+  .message {
+    color: #9A9A9A;
+    font-weight: bold;
+    font-size: 20px;
+    margin-bottom: 4vh;
+  }
+
+  .game-grid {
+    display: grid;
+    grid-template-columns: repeat(5, 1fr);
+    max-width: 250px;
+
+    .green {
+      background-color: #00E871;
+    }
+
+    .red {
+      background-color: #E85A5F;
+    }
+
+    .blue {
+      background-color: #42D8E8;
+    }
+
+    .grid-element {
+      width: 50px;
+      height: 50px;
+      border: 2px solid #EEEEF0;
+      border-right: 0;
+    }
+
+    .grid-element:nth-child(5n) {
+      border-right: 2px solid #EEEEF0;
+    }
+  }
 
 }
-.game-grid{
-  display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  .green{
-    background-color: chartreuse;
+
+
+.board {
+  flex: 1;
+  height: 100%;
+
+  h1{
+    color: #8B8B8B;
+    font-size:30px;
+    margin-bottom:2vh;
   }
-  .red{
-    background-color: crimson;
+
+  .container {
+    height: auto;
   }
-  .blue{
-    background-color: aqua;
+
+  .leaders-list {
+    width: 60%;
+
+    .list-element {
+      padding: 20px 15px;
+      background: #CFD8DC;
+      color: #A0A9AC;
+      font-size: 22px;
+      font-weight: bold;
+      display: flex;
+      width: 100%;
+      justify-content: space-between;
+      margin-bottom: 5px;
+    }
   }
 
 }
-.grid-element{
-  width:40px;
-  height: 40px;
-  border: 2px solid #bbb8bc;
-  border-right: 0;
-}
 
-.grid-element:nth-child(5n){
-  border-right: 2px solid #bbb8bc
-}
