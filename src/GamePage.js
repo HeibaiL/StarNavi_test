@@ -2,28 +2,20 @@ import React, {useEffect, useState} from "react";
 
 import useGame from "./Game";
 import Options from "../components/Options";
+import useGameSettings from "./fetchData/useGameSettings";
+import Board from "../components/Board";
 
 const GamePage = () => {
-    const [gameSettings, useGameSettings] = useState({
-        allSettings: null,
-        chosenSettings: {mode: '', delay: 2000, field: 5}
-    });
+
     const [name, setName] = useState("");
     const [message, setMessage] = useState('Your message');
-    const [isPlaying, setPlaying] = useState(false)
-
-    useEffect(() => {
-        fetch("https://starnavi-frontend-test-task.herokuapp.com/game-settings")
-            .then(res => res.json())
-            .then(res => useGameSettings({...gameSettings, allSettings: res}));
-
-    }, []);
-
+    const [isPlaying, setPlaying] = useState(false);
+    const {gameSettings,setGameSettings} = useGameSettings();
 
     const onSelectChange = e => {
         const {value} = e.target;
         const chosenSettings = gameSettings.allSettings[value];
-        useGameSettings({...gameSettings, chosenSettings: {...chosenSettings, mode: value}})
+        setGameSettings({...gameSettings, chosenSettings: {...chosenSettings, mode: value}})
     };
 
     const onPlayClick = () => {
@@ -37,7 +29,6 @@ const GamePage = () => {
     const togglePlay = () => {
         setPlaying(!isPlaying)
     }
-
 
     const onInputChange = e => {
         const {value} = e.target;
@@ -57,7 +48,6 @@ const GamePage = () => {
             togglePlay()
         }
     }
-console.log(isPlaying)
 
     return <div className="game">
         <div className="container">
@@ -69,32 +59,8 @@ console.log(isPlaying)
             />
             <div className="message">{message}</div>
             <div>
-                {
-                    board && board.map((row, i) => (
-                        <div className="board" key={i}>
-                            {
-                                row.map((cell, j) => {
-                                    let color;
-                                    switch (cell.getStatus()) {
-                                        case 'PENDING':
-                                            color = `blue`
-                                            break;
-                                        case 'FAILED':
-                                            color = 'red'
-                                            break;
-                                        case 'SUCCESS':
-                                            color = 'green'
-                                    }
-                                    return <div key={j}
-                                                onClick={() => clickCell(cell)}
-                                                className={`cells ${color}`}
-                                    >
-                                    </div>
-                                })
-                            }
-                        </div>
-                    ))
-                }
+                <Board board={board} clickCell={clickCell}/>
+
             </div>
         </div>
     </div>
