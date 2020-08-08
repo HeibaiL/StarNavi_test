@@ -27,6 +27,7 @@ const GamePage = () => {
     };
 
     const onPlayClick = () => {
+        if(!gameSettings.chosenSettings.mode && !name) return setMessage(" Please, choose the game mode and type your name in!")
         if (!gameSettings.chosenSettings.mode) return setMessage("Please, choose the game mode!")
         if (!name) return setMessage("Please, type your name in!")
         setMessage("The game is on!")
@@ -36,6 +37,7 @@ const GamePage = () => {
     const togglePlay = () => {
         setPlaying(!isPlaying)
     }
+
 
     const onInputChange = e => {
         const {value} = e.target;
