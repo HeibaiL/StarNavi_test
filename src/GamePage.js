@@ -43,12 +43,19 @@ const GamePage = () => {
     }
     const {delay, field} = gameSettings.chosenSettings;
 
-    const {board, game, setGameOn, clickCell} = useGame({
+    const {board, game, clickCell} = useGame({
         isPlaying,
         delay,
         field,
         name
     });
+
+    if (game) {
+        if (game.isGameFinished()) {
+            togglePlay()
+        }
+    }
+console.log(isPlaying)
 
     return <div className="game">
         <div className="container">

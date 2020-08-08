@@ -129,9 +129,7 @@ const useGame = ({delay, field, name, isPlaying}) => {
         }, 1000 / 60)
         setGameId(id)
     };
-    if(game){
-        console.log(game.isGameFinished())
-    }
+
 
     useEffect(() => {
         if (game) {
@@ -156,29 +154,4 @@ const useGame = ({delay, field, name, isPlaying}) => {
     };
 };
 
-// const GamePage = () => {
-//     const { board, clickCell } = useGame();
-//     return (
-//         <div>
-//             {
-//                 board && board.map((row, i) => (
-//                     <div className="row" style={{ display: 'flex' }}>
-//                         {
-//                             row.map((cell, j) => (
-//                                 <div
-//                                     onClick={() => clickCell(cell)}
-//                                     style={{ padding: 5, border: '1px solid #eee' }}
-//                                 >
-//                                     {i}, {j}, {cell.getStatus()}
-//                                 </div>
-//                             ))
-//                         }
-//                     </div>
-//                 ))
-//             }
-//         </div>
-//     );
-// };
-
-// export default GamePage;
 export default useGame;
