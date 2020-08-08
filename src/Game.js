@@ -1,94 +1,171 @@
-import React, {useEffect, useState, useCallback} from "react";
+import React, {useEffect, useState} from 'react';
 
-import Options from "../components/Options";
-import GridCell from "../components/GridCell";
+const CELL_STATUSES = {
+    EMPTY: 'EMPTY',
+    PENDING: 'PENDING',
+    SUCCESS: 'SUCCESS',
+    FAILED: 'FAILED'
+};
 
-const Game = () => {
-    const [cells, useCells] = useState([]);
-    const [gameSettings, useGameSettings] = useState({allSettings: null, chosenSettings: {}});
-    const [gameOn, useGameOn] = useState(false);
-    const [intervalId, setIntervalId] = useState(null);
-    const [activeCell, setActiveCell] = useState(null);
-    const [prevCell, setPrevCell] = useState(null);
-    const [successArr, setSuccessArr] = useState([]);
-    const [failArr, setFailArr] = useState([]);
-
-
-    useEffect(() => {
-        fetch("https://starnavi-frontend-test-task.herokuapp.com/game-settings")
-            .then(res => res.json())
-            .then(res => useGameSettings({...gameSettings, allSettings: res}));
-
-    }, []);
-    useEffect(() => {
-        const cellsNum = gameSettings.chosenSettings.field || 5;
-        const cellsArr = [];
-        for (let i = 0; i < cellsNum; i++) {
-            cellsArr.push({id: i, pending: false, success: false, fail: false});
-        }
-        useCells(cellsArr)
-    }, [gameSettings])
-
-    const onSelectChange = e => {
-        const {value} = e.target;
-        const chosenSettings = gameSettings.allSettings[value];
-        useGameSettings({...gameSettings, chosenSettings})
-    }
-    useEffect(() => {
-        if (gameOn) {
-            const activeInterval = setInterval(() => {
-                const randomIndex = Math.floor(Math.random() * gridsNum);
-                const randomCell = cells[randomIndex];
-                setActiveCell(randomCell)
-            }, 1000)
-
-            setIntervalId(activeInterval)
-        } else {
-            clearInterval(intervalId)
-        }
-        return () => clearInterval(intervalId);
-    }, [gameOn]);
-
-
-    useEffect(() => {
-        if (activeCell) {
-            const success = successArr.some(el => el.id === activeCell.id);
-            onCellChange(activeCell, "blue")
-            setTimeout(() => {
-                onCellChange(activeCell, "red")
-            }, 1000)
-
-        }
-    }, [activeCell, successArr]);
-
-
-    const onCellChange = (cellArg, color) => {
-        const updatedCells = cells && cells.map(cell => (cell.id === cellArg.id ? {...cell, [color]: true} : cell));
-        useCells(updatedCells)
-
-    };
-
-    const onCellClick = cellArg => {
-        const {id} = cellArg;
-        const updatedCells = cells.map(cell => (cell.id === id ? {...cell, green: true} : cell));
-        setSuccessArr(successArr.concat(cellArg))
-        useCells(updatedCells)
-    };
-
-    const togglePlay = () => {
-        return useGameOn(!gameOn);
+class Cell {
+    constructor() {
+        this.status = CELL_STATUSES.EMPTY;
     }
 
-    return <div className="game">
-        <div className="container">
-            <Options startGame={togglePlay} onSelectChange={onSelectChange} options={gameSettings.allSettings}/>
-            <div className="message">Message here</div>
-            <div className="game-grid">
-                {cells && cells.map(cell => (<GridCell key={cell.id} cell={cell} onClick={onCellClick}/>))}
-            </div>
-        </div>
+    setStatus(status) {
+        this.status = status;
+    }
 
+    getStatus() {
+        return this.status;
+    }
 
-    </div>
+    isEmpty() {
+        return this.status === CELL_STATUSES.EMPTY;
+    }
+
+    isPending() {
+        return this.status === CELL_STATUSES.PENDING;
+    }
 }
-export default Game;
+
+class Game {
+    constructor(pendingTime, size) {
+        this.pendingTime = pendingTime;
+        this.size = size;
+        this.initGame();
+    }
+
+    initGame() {
+        this.board = new Array(this.size).fill(null).map(() => new Array(this.size).fill(null).map(() => new Cell()));
+        this.timer = null;
+
+        this.userScore = 0;
+        this.computerScore = 0;
+    }
+
+    startGame() {
+        this.chooseCellAndStart();
+    }
+
+    resetGame() {
+        this.initGame();
+        this.startGame();
+    }
+
+    chooseCellAndStart() {
+        if (this.isGameFinished()) {
+            this.showResults();
+            return;
+        }
+
+        const cell = this._getEmptyCell();
+
+        cell.setStatus(CELL_STATUSES.PENDING);
+        this.timer = setTimeout(() => {
+            cell.setStatus(CELL_STATUSES.FAILED);
+            this.computerScore += 1;
+            this.startGame();
+        }, this.pendingTime);
+    }
+
+    _getEmptyCell() {
+        const i = Math.floor(Math.random() * this.size);
+        const j = Math.floor(Math.random() * this.size);
+
+        const cell = this.board[i][j];
+        return this.board[i][j].isEmpty() ? cell : this._getEmptyCell();
+    }
+
+    processUserClick(cell) {
+        if (cell.isPending()) {
+            clearTimeout(this.timer);
+            cell.setStatus(CELL_STATUSES.SUCCESS);
+            this.userScore += 1;
+            this.chooseCellAndStart();
+        }
+    }
+
+    isGameFinished() {
+        const halfSize = this.size/2;
+        const sumScore = this.userScore + this.computerScore;
+        return sumScore === this.size * this.size;
+    }
+
+    showResults() {
+        let result = '';
+        if (this.userScore > this.computerScore) {
+            result = 'User win!';
+        }
+
+        if (this.userScore < this.computerScore) {
+            result = 'Computer win!';
+        }
+
+        if (this.userScore === this.computerScore) {
+            result = 'Draw';
+        }
+
+        // window.confirm(`${result}\nСыграть еще раз?`) && this.resetGame();
+    }
+
+    getBoard() {
+        return this.board;
+    }
+}
+
+const useGame = ({delay, field}) => {
+    const [board, setBoard] = useState(null);
+    const [game, setGame] = useState(null);
+
+    useEffect(() => {
+        const gameInstance = new Game(delay, field);
+        gameInstance.startGame()
+
+        setGame(gameInstance);
+        setBoard(gameInstance.getBoard());
+
+        const render = () => {
+            setBoard([...gameInstance.getBoard()]);
+            window.requestAnimationFrame(render);
+        };
+        // https://stackoverflow.com/questions/38709923/why-is-requestanimationframe-better-than-setinterval-or-settimeout
+        window.requestAnimationFrame(render);
+    }, [field]);
+
+    const clickCell = (cell) => {
+        game.processUserClick(cell);
+    };
+
+    return {
+        board,
+        clickCell,
+    };
+};
+
+// const GamePage = () => {
+//     const { board, clickCell } = useGame();
+//     return (
+//         <div>
+//             {
+//                 board && board.map((row, i) => (
+//                     <div className="row" style={{ display: 'flex' }}>
+//                         {
+//                             row.map((cell, j) => (
+//                                 <div
+//                                     onClick={() => clickCell(cell)}
+//                                     style={{ padding: 5, border: '1px solid #eee' }}
+//                                 >
+//                                     {i}, {j}, {cell.getStatus()}
+//                                 </div>
+//                             ))
+//                         }
+//                     </div>
+//                 ))
+//             }
+//         </div>
+//     );
+// };
+
+// export default GamePage;
+export default useGame;

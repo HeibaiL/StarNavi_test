@@ -1,11 +1,11 @@
 import React from "react";
-import Game from "./Game"
-import Board from "../components/Board"
+import GamePage from "./GamePage"
+import LeaderBoard from "../components/leaderBoard"
 
 const App = () => {
     return <div className="app">
-        <Game/>
-        <Board/>
+        <GamePage/>
+        <LeaderBoard/>
     </div>
 };
 export default App;
