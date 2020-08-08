@@ -28,7 +28,7 @@ $font: "Helvetica";
 
 .container {
   position: relative;
-  top: 20%;
+  top: 10%;
   min-width: 600px;
   margin: auto;
   width: 70%;
@@ -68,7 +68,6 @@ $font: "Helvetica";
       font-weight: 500;
       outline: none;
       cursor: pointer;
-
     }
 
     .userName {
@@ -91,11 +90,8 @@ $font: "Helvetica";
     text-align: center;
   }
 
-  .game-grid {
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    max-width: 250px;
-    margin: auto;
+  .board {
+    display: flex;
 
     .green {
       background-color: #00E871;
@@ -109,21 +105,20 @@ $font: "Helvetica";
       background-color: #42D8E8;
     }
 
-    .grid-element {
-      width: 50px;
-      height: 50px;
+    .cells {
+      width: 40px;
+      height: 40px;
       border: 2px solid #EEEEF0;
       border-right: 0;
     }
 
-    .grid-element:nth-child(5n) {
+    .cells:nth-child(5n) {
       border-right: 2px solid #EEEEF0;
     }
   }
-
 }
 
-.board {
+.leaderBoard {
   flex: 1;
   height: 100%;
   overflow-y: auto;

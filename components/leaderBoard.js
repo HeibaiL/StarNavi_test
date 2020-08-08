@@ -1,6 +1,6 @@
 import React, {useEffect, useState, useMemo} from "react";
 
-const Board = () => {
+const LeaderBoard = () => {
     const [data, setData] = useState(null);
 
     useEffect(() => {
@@ -20,9 +20,8 @@ const Board = () => {
 
     }, [data]);
 
-    return <div className="board">
+    return <div className="leaderBoard">
         <div className="container">
-
             <h1>Leader Board</h1>
             <ul className="leaders-list">
                 {lastLeaders && lastLeaders.map(({id, date, winner}) => <li key={id} className="list-element"><p
@@ -33,4 +32,4 @@ const Board = () => {
 
     </div>
 }
-export default Board;
+export default LeaderBoard;
