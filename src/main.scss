@@ -92,6 +92,7 @@ $font: "Helvetica";
 
   .board {
     display: flex;
+    justify-content: center;
 
     .green {
       background-color: #00E871;
@@ -112,7 +113,7 @@ $font: "Helvetica";
       border-right: 0;
     }
 
-    .cells:nth-child(5n) {
+    .cells:nth-last-child(1){
       border-right: 2px solid #EEEEF0;
     }
   }
