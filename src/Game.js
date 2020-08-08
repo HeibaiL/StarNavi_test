@@ -30,9 +30,10 @@ class Cell {
 }
 
 class Game {
-    constructor(pendingTime, size) {
+    constructor(pendingTime, size, userName) {
         this.pendingTime = pendingTime;
         this.size = size;
+        this.userName = userName;
         this.initGame();
     }
 
@@ -55,12 +56,10 @@ class Game {
 
     chooseCellAndStart() {
         if (this.isGameFinished()) {
-            this.showResults();
-            return;
+            return this.showResults();
         }
 
         const cell = this._getEmptyCell();
-
         cell.setStatus(CELL_STATUSES.PENDING);
         this.timer = setTimeout(() => {
             cell.setStatus(CELL_STATUSES.FAILED);
@@ -87,15 +86,14 @@ class Game {
     }
 
     isGameFinished() {
-        const halfSize = this.size/2;
-        const sumScore = this.userScore + this.computerScore;
-        return sumScore === this.size * this.size;
+        const halfSize = (this.size * this.size) / 2;
+        return this.userScore > halfSize || this.computerScore > halfSize
     }
 
     showResults() {
         let result = '';
         if (this.userScore > this.computerScore) {
-            result = 'User win!';
+            result = `${this.userName} win!`;
         }
 
         if (this.userScore < this.computerScore) {
@@ -105,8 +103,7 @@ class Game {
         if (this.userScore === this.computerScore) {
             result = 'Draw';
         }
-
-        // window.confirm(`${result}\nСыграть еще раз?`) && this.resetGame();
+        return result
     }
 
     getBoard() {
@@ -114,32 +111,48 @@ class Game {
     }
 }
 
-const useGame = ({delay, field}) => {
+const useGame = ({delay, field, name, isPlaying}) => {
     const [board, setBoard] = useState(null);
     const [game, setGame] = useState(null);
+    const [gameId, setGameId] = useState(null);
 
     useEffect(() => {
-        const gameInstance = new Game(delay, field);
-        gameInstance.startGame()
-
+        const gameInstance = new Game(delay, field, name);
         setGame(gameInstance);
         setBoard(gameInstance.getBoard());
 
-        const render = () => {
-            setBoard([...gameInstance.getBoard()]);
-            window.requestAnimationFrame(render);
-        };
-        // https://stackoverflow.com/questions/38709923/why-is-requestanimationframe-better-than-setinterval-or-settimeout
-        window.requestAnimationFrame(render);
-    }, [field]);
+    }, [field, name]);
+
+    const render = () => {
+        let id = setInterval(() => {
+            setBoard([...game.getBoard()]);
+        }, 1000 / 60)
+        setGameId(id)
+    };
+    if(game){
+        console.log(game.isGameFinished())
+    }
+
+    useEffect(() => {
+        if (game) {
+            game.initGame()
+            if (isPlaying) {
+                game.startGame()
+                render()
+            } else {
+                clearInterval(gameId)
+            }
+        }
+    }, [isPlaying])
+
 
     const clickCell = (cell) => {
         game.processUserClick(cell);
     };
-
     return {
         board,
-        clickCell,
+        game,
+        clickCell
     };
 };
 
