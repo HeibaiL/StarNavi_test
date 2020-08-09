@@ -1,4 +1,4 @@
-import React, {useEffect} from "react";
+import React, {useEffect, useMemo} from "react";
 
 import useLeaderBoard from "../fetchData/useLeaderBoard";
 import ListElement from "./ListElement";
@@ -10,12 +10,17 @@ const LeaderBoard = () => {
             updateData()
         }, []
     )
+    const lastLeadersRendered = useMemo(() => {
+
+        return lastLeaders.map(({id, date, winner}) => <ListElement key={id} date={date}
+                                                                    winner={winner}/>)
+    }, [lastLeaders])
+
     return <div className="leaderBoard">
         <div className="container">
             <h1>Leader Board</h1>
             <ul className="leaders-list">
-                {lastLeaders && lastLeaders.map(({id, date, winner}) => <ListElement key={id} date={date}
-                                                                                     winner={winner}/>)}
+                {lastLeaders && lastLeadersRendered}
             </ul>
         </div>
 
