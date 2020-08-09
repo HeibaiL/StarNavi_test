@@ -1,4 +1,3 @@
-import React, {useEffect, useState} from 'react';
 
 const CELL_STATUSES = {
     EMPTY: 'EMPTY',
@@ -30,10 +29,11 @@ class Cell {
 }
 
 class Game {
-    constructor(pendingTime, size, userName) {
+    constructor(pendingTime, size, userName, setPlayingCallback) {
         this.pendingTime = pendingTime;
         this.size = size;
         this.userName = userName;
+        this.setPlaying = setPlayingCallback;
         this.initGame();
     }
 
@@ -49,14 +49,9 @@ class Game {
         this.chooseCellAndStart();
     }
 
-    resetGame() {
-        this.initGame();
-        this.startGame();
-    }
-
     chooseCellAndStart() {
         if (this.isGameFinished()) {
-            return this.showResults();
+            return this.setPlaying(false)
         }
 
         const cell = this._getEmptyCell();
@@ -87,23 +82,27 @@ class Game {
 
     isGameFinished() {
         const halfSize = (this.size * this.size) / 2;
-        return this.userScore > halfSize || this.computerScore > halfSize
+        let equal = false;
+        if (this.userScore === halfSize || this.computerScore === halfSize) {
+           equal = this.userScore === this.computerScore
+        }
+        return this.userScore > halfSize || this.computerScore > halfSize || equal
     }
 
-    showResults() {
-        let result = '';
+    showWinner() {
+        let winner = '';
         if (this.userScore > this.computerScore) {
-            result = `${this.userName} win!`;
+            winner = this.userName;
         }
 
         if (this.userScore < this.computerScore) {
-            result = 'Computer win!';
+            winner = 'Computer'
         }
 
         if (this.userScore === this.computerScore) {
-            result = 'Draw';
+            winner = 'Draw';
         }
-        return result
+        return winner
     }
 
     getBoard() {
@@ -111,47 +110,6 @@ class Game {
     }
 }
 
-const useGame = ({delay, field, name, isPlaying}) => {
-    const [board, setBoard] = useState(null);
-    const [game, setGame] = useState(null);
-    const [gameId, setGameId] = useState(null);
-
-    useEffect(() => {
-        const gameInstance = new Game(delay, field, name);
-        setGame(gameInstance);
-        setBoard(gameInstance.getBoard());
-
-    }, [field, name]);
-
-    const render = () => {
-        let id = setInterval(() => {
-            setBoard([...game.getBoard()]);
-        }, 1000 / 60)
-        setGameId(id)
-    };
 
 
-    useEffect(() => {
-        if (game) {
-            game.initGame()
-            if (isPlaying) {
-                game.startGame()
-                render()
-            } else {
-                clearInterval(gameId)
-            }
-        }
-    }, [isPlaying])
-
-
-    const clickCell = (cell) => {
-        game.processUserClick(cell);
-    };
-    return {
-        board,
-        game,
-        clickCell
-    };
-};
-
-export default useGame;
+export default Game;

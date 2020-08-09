@@ -1,4 +1,4 @@
-import React from "react";
+import React,{useContext} from "react";
 import Cell from "./Cell";
 
 const Board = ({board, clickCell}) => {
@@ -7,7 +7,7 @@ const Board = ({board, clickCell}) => {
             <div className="board" key={i}>
                 {
                     row.map((cell, j) => {
-                      return  <Cell cell={cell} key={j} clickCell={clickCell}/>
+                        return <Cell cell={cell} key={j} clickCell={clickCell}/>
                     })
                 }
             </div>

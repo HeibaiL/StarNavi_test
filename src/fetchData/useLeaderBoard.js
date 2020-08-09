@@ -1,27 +1,48 @@
-import React, {useEffect, useMemo, useState} from "react";
+import React, {useMemo, useState, useContext} from "react";
+import {LeadersContext} from "../contextStore/LeadersContext";
 
 const useLeaderBoard = () => {
+    const [leaders, setLeaders] = useContext(LeadersContext);
 
-    const [data, setData] = useState(null);
-
-    useEffect(() => {
-        fetch("https://starnavi-frontend-test-task.herokuapp.com/winners")
+    const updateData = () => {
+        return fetch("https://starnavi-frontend-test-task.herokuapp.com/winners")
             .then(res => res.json())
-            .then(res => setData(res))
-    }, []);
+            .then(res => {
+                setLeaders(res)
+            })
+    }
+    const resetData = () => {
+        setLeaders([])
+    }
+
+    const sendData = data => {
+        return fetch("https://starnavi-frontend-test-task.herokuapp.com/winners", {
+            headers: {
+                'Content-Type': 'application/json',
+            },
+            method: "POST",
+            body: JSON.stringify(data)
+        })
+    }
 
     const lastLeaders = useMemo(() => {
-        if (!data) return;
         const lastLeadersArr = [];
-        for (let i = 0; i < 5; i++) {
-            lastLeadersArr.push(data[i])
-        }
-        return lastLeadersArr
+        if (leaders) {
 
-    }, [data]);
+            if (!leaders.length) return lastLeadersArr;
+            for (let i = leaders.length - 1; i > leaders.length - 6; i--) {
+                lastLeadersArr.push(leaders[i])
+            }
+            return lastLeadersArr
+        }
+
+    }, [leaders]);
 
     return {
-        lastLeaders
+        lastLeaders,
+        updateData,
+        sendData,
+        resetData
     }
 }
 export default useLeaderBoard;

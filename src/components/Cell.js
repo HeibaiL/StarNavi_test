@@ -15,7 +15,7 @@ const Cell = ({cell, clickCell}) => {
 
     return <div
         onClick={() => clickCell(cell)}
-        className={`cells ${color}`}
+        className={`cells ${color ? color : ''}`}
     >
     </div>
 
