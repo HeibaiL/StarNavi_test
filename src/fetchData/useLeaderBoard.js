@@ -14,7 +14,6 @@ const useLeaderBoard = () => {
     const resetData = () => {
         setLeaders([])
     }
-
     const sendData = data => {
         return fetch("https://starnavi-frontend-test-task.herokuapp.com/winners", {
             headers: {
@@ -28,13 +27,11 @@ const useLeaderBoard = () => {
     const lastLeaders = useMemo(() => {
         const lastLeadersArr = [];
         if (leaders) {
-
-            if (!leaders.length) return lastLeadersArr;
             for (let i = leaders.length - 1; i > leaders.length - 6; i--) {
                 lastLeadersArr.push(leaders[i])
             }
-            return lastLeadersArr
         }
+       return lastLeadersArr
 
     }, [leaders]);
 
